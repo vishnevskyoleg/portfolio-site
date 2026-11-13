@@ -14,15 +14,15 @@ window.LF_I18N = {
   "kind": "rows",
   "en": [
    "AI-driven Engineer",
-   "Digital Lead,",
+   "Digital Lead",
    "Expert in Visual &amp; UX",
    "B2G / B2B markets"
   ],
   "ru": [
-   "AI-инженер",
-   "Digital Lead,",
-   "эксперт по визуалу и UX",
-   "в B2G и B2B"
+   "AI-driven Engineer",
+   "Digital Lead",
+   "Expert in Visual &amp; UX",
+   "B2G / B2B markets"
   ]
  },
  "lead": {
