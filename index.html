@@ -7,6 +7,8 @@
 <meta name="description" content="Portfolio of designer Oleg Vishnevsky: product interfaces, websites, design systems and brand identity. 20+ years of practice, AI-driven pipelines since 2022." data-i18n-attr="content:meta_desc">
 <meta name="author" content="Oleg Vishnevsky">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="google-site-verification" content="D3kBv0czTdX3YhzQ9R6DdOJD-7GU9-3vS070gwM1a0I">
+<meta name="yandex-verification" content="2d72ef0c0378927c">
 <link rel="canonical" href="https://lovelyfriendly.com/">
 <link rel="alternate" hreflang="en" href="https://lovelyfriendly.com/">
 <link rel="alternate" hreflang="ru" href="https://lovelyfriendly.com/ru/">
@@ -40,9 +42,12 @@
 <link rel="preload" href="/assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/figure-still.webp" as="image" type="image/webp" fetchpriority="high">
 <link rel="stylesheet" href="/css/style.css?v=c960824c">
-<script>
-/* the figure is coming: until its data arrive a soft still of it stands in its place (css: .wants-3d) */
-if (window.WebGL2RenderingContext) document.documentElement.classList.add('wants-3d');
+<script data-3d="/js/figure-data.js?v=261bc2f8 /js/wall-data.js?v=6cd84416 /js/figure.js?v=0857396c">
+/* the figure: where WebGL2 can run, its data start loading at once (as preloads, js/boot3d.js runs them) and a soft still stands in its place
+   until they arrive (css: .wants-3d); elsewhere the three files of the figure are not loaded at all and the cut-out image stays */
+(function (d, s) { if (!window.WebGL2RenderingContext || !('DecompressionStream' in window)) return; d.classList.add('wants-3d'); window.__LF3D = 1;
+  (s && s.getAttribute('data-3d') || '').split(' ').forEach(function (u) { if (!u) return; var l = document.createElement('link');
+    l.rel = 'preload'; l.as = 'script'; l.href = u; l.setAttribute('fetchpriority', 'low'); document.head.appendChild(l); }); })(document.documentElement, document.currentScript);
 /* reveal guard: hidden states exist only with JS and without reduced motion; if js/site.js does not start in 3 s, everything is shown */
 (function (d) { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; d.classList.add('rv'); setTimeout(function () { if (!d.classList.contains('rv-ready')) d.classList.add('rv-all'); }, 3000); })(document.documentElement);
 </script>
@@ -145,8 +150,8 @@ if (window.WebGL2RenderingContext) document.documentElement.classList.add('wants
     "https://medium.com/@vishnevsky",
     "https://www.behance.net/olegvishnevsky",
     "https://www.instagram.com/vishnevsky",
-    "https://t.me/lovelyandfriendly",
     "https://t.me/olegvishnevsky",
+    "https://t.me/lovelyandfriendly",
     "https://www.facebook.com/olegvishnevsky",
     "https://www.threads.com/@vishnevsky"
    ]
@@ -232,7 +237,7 @@ if (window.WebGL2RenderingContext) document.documentElement.classList.add('wants
         <img class="feed__item" style="--w:261.91" data-n="12" data-video="1" src="/assets/cases/12.jpg" width="524" height="332" alt="Website Portfolio Editorial Design" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:221.33" data-n="13" data-video="1" src="/assets/cases/13.jpg" width="443" height="332" alt="Branding for an e-commerce sleep accessories store" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:221.33" data-n="14" data-video="1" src="/assets/cases/14.jpg" width="443" height="332" alt="Musical-Event Visual Narrative" loading="lazy" decoding="async" draggable="false">
-        <img class="feed__item" style="--w:235.56" data-n="15" data-video="1" src="/assets/cases/15.jpg" width="471" height="332" alt="Mine Page Web Design Concept" loading="lazy" decoding="async" draggable="false">
+        <img class="feed__item" style="--w:235.56" data-n="15" data-video="1" src="/assets/cases/15.jpg" width="471" height="332" alt="Main Page Web Design Concept" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:235.56" data-n="16" src="/assets/cases/16.jpg" width="471" height="332" alt="Beach Goth Greelz. Totally Overhyped Streetwear Brand" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:236.25" data-n="17" data-video="1" src="/assets/cases/17.jpg" width="472" height="332" alt="Artdirector Website Backstage" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:235.47" data-n="18" data-video="1" src="/assets/cases/18.jpg" width="471" height="332" alt="AI-Technologies Transforming Healthcare Right Now" loading="lazy" decoding="async" draggable="false">
@@ -243,8 +248,8 @@ if (window.WebGL2RenderingContext) document.documentElement.classList.add('wants
         <img class="feed__item" style="--w:221.33" data-n="23" data-video="1" src="/assets/cases/23.jpg" width="443" height="332" alt="Website Design For Private Underground Event" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:221.33" data-n="24" data-video="1" src="/assets/cases/24.jpg" width="443" height="332" alt="SVORA Visual Identity Of Private Underground Parties" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:235.56" data-n="25" src="/assets/cases/25.jpg" width="471" height="332" alt="Marine Mammals of Kamchatka Editorial Illustrations Design" loading="lazy" decoding="async" draggable="false">
-        <img class="feed__item" style="--w:235.56" data-n="26" src="/assets/cases/26.jpg" width="471" height="332" alt="Marine Mammals of Kamchatka Encyclopedia Illustations" loading="lazy" decoding="async" draggable="false">
-        <img class="feed__item" style="--w:235.56" data-n="27" src="/assets/cases/27.jpg" width="471" height="332" alt="Marine Mammals of Kamchatka Illustations" loading="lazy" decoding="async" draggable="false">
+        <img class="feed__item" style="--w:235.56" data-n="26" src="/assets/cases/26.jpg" width="471" height="332" alt="Marine Mammals of Kamchatka Encyclopedia Illustrations" loading="lazy" decoding="async" draggable="false">
+        <img class="feed__item" style="--w:235.56" data-n="27" src="/assets/cases/27.jpg" width="471" height="332" alt="Marine Mammals of Kamchatka Illustrations" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:221.33" data-n="28" data-video="1" src="/assets/cases/28.jpg" width="443" height="332" alt="Liquid Metal Personal Branding" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:265.6" data-n="29" data-video="1" src="/assets/cases/29.jpg" width="531" height="332" alt="Personal Branding Concept" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:265.6" data-n="30" data-video="1" src="/assets/cases/30.jpg" width="531" height="332" alt="Digital Designer Portfolio Concept" loading="lazy" decoding="async" draggable="false">
@@ -263,7 +268,7 @@ if (window.WebGL2RenderingContext) document.documentElement.classList.add('wants
         <img class="feed__item" style="--w:221.33" data-n="43" data-video="1" src="/assets/cases/43.jpg" width="443" height="332" alt="Wetsuit For Deadly Cute — Beach Goth" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:235.56" data-n="44" src="/assets/cases/44.jpg" width="471" height="332" alt="Beach Goth Mask &amp; Sunglasses — Dark side of vacation" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:221.33" data-n="45" data-video="1" src="/assets/cases/45.jpg" width="443" height="332" alt="Beach Goth — Ghoul Shroud" loading="lazy" decoding="async" draggable="false">
-        <img class="feed__item" style="--w:221.33" data-n="46" data-video="1" src="/assets/cases/46.jpg" width="443" height="332" alt="Vine Glasses — Beach Goth Child of the Night" loading="lazy" decoding="async" draggable="false">
+        <img class="feed__item" style="--w:221.33" data-n="46" data-video="1" src="/assets/cases/46.jpg" width="443" height="332" alt="Wine Glasses — Beach Goth Child of the Night" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:235.56" data-n="47" src="/assets/cases/47.jpg" width="471" height="332" alt="Christmas toys — Happy Unholidays!" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:227.66" data-n="48" src="/assets/cases/48.jpg" width="455" height="332" alt="Words as Design: Crushing Toxic Narratives" loading="lazy" decoding="async" draggable="false">
         <img class="feed__item" style="--w:227.66" data-n="49" src="/assets/cases/49.jpg" width="455" height="332" alt="Transforming Toxicity: A Visual Art Series" loading="lazy" decoding="async" draggable="false">
@@ -361,7 +366,7 @@ if (window.WebGL2RenderingContext) document.documentElement.classList.add('wants
         <a class="display display--xxl" href="https://dribbble.com/vishnevsky" target="_blank" rel="noopener me"><span data-rv="chars">Dribbble</span></a><a class="display display--xxl" href="https://www.linkedin.com/in/olegvishnevsky/" target="_blank" rel="noopener me"><span data-rv="chars">LinkedIn</span></a><a class="display display--xxl" href="https://www.pinterest.com/vishnevsky/" target="_blank" rel="noopener me"><span data-rv="chars">Pinterest</span></a><a class="display display--xxl" href="https://medium.com/@vishnevsky" target="_blank" rel="noopener me"><span data-rv="chars">Medium</span></a>
       </nav>
       <nav class="contact__small" data-i18n-attr="aria-label:nav_more" aria-label="Other profiles" data-rv="rows">
-        <a href="https://www.behance.net/olegvishnevsky" target="_blank" rel="noopener me">Behance</a><a href="https://www.instagram.com/vishnevsky" target="_blank" rel="noopener me">Instagram</a><a href="https://t.me/lovelyandfriendly" target="_blank" rel="noopener me">Telegram</a><a href="https://t.me/olegvishnevsky" target="_blank" rel="noopener me" data-i18n="tg_blog">Telegram Blog</a><a href="https://www.facebook.com/olegvishnevsky" target="_blank" rel="noopener me">Facebook</a><a href="https://www.threads.com/@vishnevsky" target="_blank" rel="noopener me">Threads</a>
+        <a href="https://www.behance.net/olegvishnevsky" target="_blank" rel="noopener me">Behance</a><a href="https://www.instagram.com/vishnevsky" target="_blank" rel="noopener me">Instagram</a><a href="https://t.me/olegvishnevsky" target="_blank" rel="noopener me">Telegram</a><a href="https://t.me/lovelyandfriendly" target="_blank" rel="noopener me" data-i18n="tg_blog">Telegram Blog</a><a href="https://www.facebook.com/olegvishnevsky" target="_blank" rel="noopener me">Facebook</a><a href="https://www.threads.com/@vishnevsky" target="_blank" rel="noopener me">Threads</a>
       </nav>
       <!--email_off--><a class="contact__mail" href="mailto:vvvvishnevsky@gmail.com" data-rv="row">vvvvishnevsky@gmail.com</a><!--/email_off-->
     </footer>
@@ -373,8 +378,6 @@ if (window.WebGL2RenderingContext) document.documentElement.classList.add('wants
 <script src="/js/site.js?v=207dc4e7" defer fetchpriority="high"></script>
 <script src="/js/feed.js?v=a5dce341" defer></script>
 <script src="/js/playlist.js?v=acdd30a6" defer></script>
-<script src="/js/figure-data.js?v=261bc2f8" defer fetchpriority="low"></script>
-<script src="/js/wall-data.js?v=6cd84416" defer fetchpriority="low"></script>
-<script src="/js/figure.js?v=0857396c" defer></script>
+<script src="/js/boot3d.js?v=d17aa136" defer data-3d="/js/figure-data.js?v=261bc2f8 /js/wall-data.js?v=6cd84416 /js/figure.js?v=0857396c"></script>
 </body>
 </html>
