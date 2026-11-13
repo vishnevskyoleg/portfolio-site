@@ -227,6 +227,11 @@ window.LF_I18N = {
   "en": "get in touch",
   "ru": "На связи"
  },
+ "skip": {
+  "kind": "plain",
+  "en": "Skip to contacts",
+  "ru": "Перейти к контактам"
+ },
  "tg_blog": {
   "kind": "plain",
   "en": "Telegram Blog",

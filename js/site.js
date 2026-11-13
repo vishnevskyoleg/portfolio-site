@@ -318,7 +318,7 @@
   if ('IntersectionObserver' in window) {
     var warmPh = new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (!e.isIntersecting) return; warmPh.unobserve(e.target); var im = e.target.querySelector('img'); if (!im) return; im.loading = 'eager'; if (im.decode) im.decode().catch(noop); });
-    }, { rootMargin: '1400px 0px' });
+    }, { rootMargin: '900px 0px' });
     all('.ph').forEach(function (f) { if (f.querySelector('img[loading="lazy"]')) warmPh.observe(f); });
   }
 

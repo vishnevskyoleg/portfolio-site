@@ -206,7 +206,7 @@
     var m = vw < 600 ? 0 : 16, mt = 16, mb = 16 + 30;                // the caption sits under the picture
     var k = Math.min(ZOOM, (vw - m * 2) / r.width, (vh - mt - mb) / r.height, vh * ZOOM_VH / r.height);
     /* the picture grows down from the strip and keeps the heading of the block clear while the window lets it */
-    var hb = head ? Math.min(r.top, head.getBoundingClientRect().bottom + 24) : -1e6;   // and keeps 24 px of air under it
+    var hb = head ? Math.min(r.top, head.getBoundingClientRect().bottom + 34) : -1e6;   // and keeps about 24 px of air under the letters (the line box of the heading ends ~10 px below them)
     k = Math.max(1, Math.min(k, Math.max(ZOOM_MIN, (vh - mb - hb) / r.height)));
     var w = r.width * k, h = r.height * k;
     var left = Math.max(m, Math.min(vw - m - w, r.left + r.width / 2 - w / 2));
@@ -268,22 +268,36 @@
     it.setAttribute('role', 'button');
   });
   items.slice(half).forEach(function (it) { it.setAttribute('aria-hidden', 'true'); it.removeAttribute('tabindex'); });
+  /* The strip is two rounds of the same covers. The focus lives on the first round; what the eye sees is whichever copy
+     of that cover is in the window, so the ring, the opening and the caption go to that copy. */
+  function seen(it) {
+    var i = items.indexOf(it), r = feed.getBoundingClientRect(), a = it.getBoundingClientRect();
+    if (a.right > r.left && a.left < r.right) return it;
+    var twin = items[i < half ? i + half : i - half];
+    return twin || it;
+  }
+  var ring = null;
+  function mark(el) { if (ring) ring.classList.remove('is-kfocus'); ring = el; if (el) el.classList.add('is-kfocus'); }
   function bring(it) {                                              // the focused cover is pulled into the middle of the strip
     if (!lefts.length || !period) measure();
     var i = items.indexOf(it), fw = feed.clientWidth;
-    if (calm.matches) { it.scrollIntoView({ block: 'nearest', inline: 'center' }); return; }
-    var x = lefts[i] - pos;
-    if (x < 16 || x + widths[i] > fw - 16) { pos = lefts[i] - (fw - widths[i]) / 2; place(); }
+    if (calm.matches) { it.scrollIntoView({ block: 'nearest', inline: 'center' }); mark(it); return it; }
+    var aim = lefts[i] - (fw - widths[i]) / 2;
+    if (aim < 0) aim += period;                                     // its copy of the second round stands in the middle instead
+    var x = lefts[i] - pos, xt = lefts[i] + period - pos;
+    var inView = (x >= 16 && x + widths[i] <= fw - 16) || (xt >= 16 && xt + widths[i] <= fw - 16);
+    if (!inView) { pos = aim; place(); }
+    var v = seen(it); mark(v); return v;
   }
   feed.addEventListener('focusin', function (e) {
     var it = e.target.closest && e.target.closest('.feed__item'); if (!it || first.indexOf(it) < 0) return;
     first.forEach(function (x) { x.tabIndex = x === it ? 0 : -1; });
-    hold = 1e6; push = 0; base = 0; bring(it);
-    if (zoomed && kbd) { openOn(it, true); kbd = true; }
+    hold = 1e6; push = 0; base = 0; var v = bring(it);
+    if (zoomed && kbd) { openOn(v, true); kbd = true; }
   });
   feed.addEventListener('focusout', function (e) {
     if (e.relatedTarget && feed.contains(e.relatedTarget)) return;
-    if (kbd) close(); kbd = false; hold = 0.6; wake();
+    if (kbd) close(); kbd = false; mark(null); hold = 0.6; wake();
   });
   feed.addEventListener('keydown', function (e) {
     var it = e.target.closest && e.target.closest('.feed__item'); if (!it) return;
@@ -292,7 +306,14 @@
     if (to !== null) { e.preventDefault(); first[(to + first.length) % first.length].focus({ preventScroll: true }); return; }
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      if (zoomed === it) close(); else { bring(it); openOn(it, true); kbd = true; }
+      var v = bring(it);
+      if (zoomed === v) { close(); return; }
+      /* from the keyboard the page first makes room under the heading of the block, so the cover can grow without covering it */
+      var hr = head ? head.getBoundingClientRect() : null, vh = window.innerHeight;
+      if (hr && hr.bottom + 34 + v.getBoundingClientRect().height * ZOOM_MIN + 46 > vh && hr.top > 16) {
+        window.scrollTo(0, window.scrollY + Math.min(hr.top - 16, hr.bottom + 34 + v.getBoundingClientRect().height * ZOOM_MIN + 46 - vh));
+        setTimeout(function () { if (document.activeElement === it) { openOn(seen(it), true); kbd = true; } }, 60);
+      } else { openOn(v, true); kbd = true; }
     }
   });
 

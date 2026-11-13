@@ -41,7 +41,7 @@
 <link rel="preload" href="/assets/fonts/sofia-sans-extra-condensed-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/figure-still.webp" as="image" type="image/webp" fetchpriority="high">
-<link rel="stylesheet" href="/css/style.css?v=6d65258b">
+<link rel="stylesheet" href="/css/style.css?v=1fabdf62">
 <script data-3d="/js/figure-data.js?v=261bc2f8 /js/wall-data.js?v=6cd84416 /js/figure.js?v=0857396c">
 /* the figure: it starts only where a WebGL2 context really opens and the network is not a slow one; there its files start loading at once
    (as preloads; js/boot3d.js runs them) and a soft still stands in its place until they arrive (css: .wants-3d). On a 3G line the wall is left out,
@@ -167,6 +167,7 @@
 </script>
 </head>
 <body>
+<a class="skip" data-i18n="skip" href="#contact">Skip to contacts</a>
 
 <!-- 3D layer: fixed to the viewport, draws the particle wall and the figure into the rect of [data-figure-slot] -->
 <canvas id="figure-canvas" aria-hidden="true"></canvas>
@@ -366,7 +367,7 @@
       <p class="sr" data-track role="status"></p>
     </section>
 
-    <footer class="contact">
+    <footer class="contact" id="contact" tabindex="-1">
       <h2 class="contact__label" data-rv="rule"><span class="contact__text" data-i18n="touch" data-rv="lines">get in touch</span><span class="contact__line" aria-hidden="true"></span></h2>
       <nav class="contact__big" data-i18n-attr="aria-label:nav_main" aria-label="Main profiles">
         <a class="display display--xxl" href="https://dribbble.com/vishnevsky" target="_blank" rel="noopener me"><span data-rv="chars">Dribbble</span></a><a class="display display--xxl" href="https://www.linkedin.com/in/olegvishnevsky/" target="_blank" rel="noopener me"><span data-rv="chars">LinkedIn</span></a><a class="display display--xxl" href="https://www.pinterest.com/vishnevsky/" target="_blank" rel="noopener me"><span data-rv="chars">Pinterest</span></a><a class="display display--xxl" href="https://medium.com/@vishnevsky" target="_blank" rel="noopener me"><span data-rv="chars">Medium</span></a>
@@ -380,9 +381,9 @@
   </main>
 </div>
 
-<script src="/js/i18n.js?v=c8374724" defer fetchpriority="high"></script>
-<script src="/js/site.js?v=410ecfc3" defer fetchpriority="high"></script>
-<script src="/js/feed.js?v=14cc9629" defer></script>
+<script src="/js/i18n.js?v=729df7b5" defer fetchpriority="high"></script>
+<script src="/js/site.js?v=7d680e3d" defer fetchpriority="high"></script>
+<script src="/js/feed.js?v=20ff4251" defer></script>
 <script src="/js/playlist.js?v=b4a6272a" defer></script>
 <script src="/js/boot3d.js?v=159045c0" defer data-3d="/js/figure-data.js?v=261bc2f8 /js/wall-data.js?v=6cd84416 /js/figure.js?v=0857396c"></script>
 </body>
