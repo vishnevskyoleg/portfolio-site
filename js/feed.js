@@ -36,7 +36,8 @@
   var STRIP_REST = 180;    // px/s: the strip must have slowed down to this before a cover opens
   var FLEE_SPEED = 380;    // px/s of the pointer: above it an open cover closes and the scrub takes over
   var STEP_SPEED = 380;    // px/s of the pointer: below it an open view moves over to the cover under the pointer
-  var STEP_TIME = 0.06;    // s on that cover before it does
+  var FLEE_IN = 1100;      // px/s: the same for a cover grown inside the strip
+  var STEP_TIME = 0.18;    // s on that cover before it does
   var FILES_V = '24';     // raise it when the files under assets/cases change: they are cached for a week by name
   var VIDEO_WAIT = 160;    // ms an opened cover waits before its video is asked for
 
@@ -74,7 +75,7 @@
       var want = (inside || hold > 0 || zoomed) ? 0 : auto();
       base += (want - base) * (1 - Math.exp(-dt * 3.5));          // the drift eases in and out
       if (inside) {
-        if (zoomed && !byTap && Math.abs(vx) > FLEE_SPEED) close();
+        if (zoomed && !byTap && Math.abs(vx) > (inl.act >= 0 ? FLEE_IN : FLEE_SPEED)) close();   // a cover grown in the strip lets the pointer walk to its neighbours; only a real swipe takes the strip back
         var aim = zoomed ? 0 : vx * SCRUB * ramp(Math.abs(vx));    // an open cover holds the strip
         if (Math.abs(aim) > Math.abs(push) || aim * push < 0) push += (aim - push) * (1 - Math.exp(-dt * 16));
         else push *= Math.exp(-dt * 11);
@@ -90,7 +91,7 @@
       if (sp < REST_SPEED && Math.abs(push) < STRIP_REST) still += dt; else still = 0;
       var it = under(px, py);
       if (!zoomed) { if (still > REST_TIME && it) { push = 0; openOn(it); } }
-      else if (it && it !== zoomed && sp < STEP_SPEED) {
+      else if (it && it !== zoomed && sp < (inl.act >= 0 ? FLEE_IN : STEP_SPEED)) {
         if (stepOn !== it) { stepOn = it; stepT = 0; }
         stepT += dt; if (stepT > STEP_TIME) openOn(it);
       } else stepOn = null;

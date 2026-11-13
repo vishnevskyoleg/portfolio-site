@@ -21,8 +21,8 @@
 
   if (answer) return;
   var T = {
-    en: { text: 'This site counts visits with Google Analytics. May it use cookies for that?', yes: 'Accept', no: 'Decline' },
-    ru: { text: 'Сайт считает визиты через Google Analytics. Разрешить для этого cookies?', yes: 'Разрешить', no: 'Отказаться' }
+    en: { text: 'Google Analytics cookies?', yes: 'Accept', no: 'Decline' },
+    ru: { text: 'Cookies для Google Analytics?', yes: 'Принять', no: 'Отклонить' }
   };
   function lang() { return document.documentElement.lang === 'ru' ? 'ru' : 'en'; }
   function build() {
