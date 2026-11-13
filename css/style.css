@@ -691,3 +691,17 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .consent__btn { min-height: 40px; padding: 0 16px; border: 1px solid var(--paper); border-radius: 999px; background: none; color: inherit; font: inherit; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; }
 .consent__btn--yes { background: var(--teal); border-color: var(--teal); color: var(--ink); }
 @media (hover: hover) { .consent__btn:hover { background: var(--paper); border-color: var(--paper); color: var(--ink); } }
+
+/* ---------- v28 ---------- */
+/* the strip clips only sideways: a cover that grows or shrinks back shows whole, not cut to the height of the strip */
+@supports (overflow: clip) { .feed.is-live { overflow-x: clip; overflow-y: visible; } }
+/* no captions under the covers (Oleg, 2026-11-13): the title stays for screen readers in the label of the cover */
+.zoom-cap { display: none !important; }
+/* the consent plate as small as the rules allow: one line, the two answers equal */
+.consent { left: max(12px, env(safe-area-inset-left, 0px)); bottom: max(12px, env(safe-area-inset-bottom, 0px)); max-width: calc(100vw - 24px);
+  display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 12px; border-radius: 999px; font-size: 12px; line-height: 1.2; }
+.consent__text { margin: 0; white-space: nowrap; }
+.consent__row { gap: 4px; flex: none; }
+.consent__btn, .consent__btn--yes { min-height: 28px; padding: 0 10px; font-size: 12px; background: none; border-color: var(--hair); color: var(--paper); }
+@media (hover: hover) { .consent__btn:hover, .consent__btn--yes:hover { background: var(--paper); border-color: var(--paper); color: var(--ink); } }
+@media (max-width: 359px) { .consent__text { white-space: normal; } }
