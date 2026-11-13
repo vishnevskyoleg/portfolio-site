@@ -37,6 +37,7 @@
   var FLEE_SPEED = 380;    // px/s of the pointer: above it an open cover closes and the scrub takes over
   var STEP_SPEED = 380;    // px/s of the pointer: below it an open view moves over to the cover under the pointer
   var STEP_TIME = 0.06;    // s on that cover before it does
+  var FILES_V = '24';     // raise it when the files under assets/cases change: they are cached for a week by name
   var VIDEO_WAIT = 160;    // ms an opened cover waits before its video is asked for
 
   var titles = {};
@@ -227,10 +228,10 @@
     void el.offsetWidth;
     el.style.transition = '';
     el.style.transform = 'none';
-    b.pic.src = BASE + 'full/' + n + '.jpg';
+    b.pic.src = BASE + 'full/' + n + '.jpg?v=' + FILES_V;
     if (it.dataset.video) b.wait = setTimeout(function () {             // a pointer just passing by does not start a download
       if (b.item !== it || cur !== b) return;
-      b.vid.src = BASE + 'video/' + n + '.mp4';
+      b.vid.src = BASE + 'video/' + n + '.mp4?v=' + FILES_V;
       var p = b.vid.play(); if (p && p.catch) p.catch(function () {});
     }, VIDEO_WAIT);
     capN.textContent = n; capT.textContent = titles[n] || '';
