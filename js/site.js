@@ -439,7 +439,7 @@
   /* ---------- go ---------- */
   window.LF = { lang: function () { return lang; }, t: text, onLang: function (fn) { listeners.push(fn); } };
   var first = /^#(ru|en)$/i.test(location.hash) ? location.hash.slice(1).toLowerCase() : served;
-  if (pages && first !== served && pages[first]) { location.replace(pages[first]); return; }   // an old "#ru" link on the site: go to that page
+  if (pages && first !== served && pages[first]) { location.replace(pages[first] + location.search); return; }   // an old "#ru" link on the site: go to that page
   var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
   var began = false;
   function begin() {
