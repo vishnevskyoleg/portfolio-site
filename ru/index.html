@@ -43,7 +43,7 @@
 <link rel="preload" href="/assets/fonts/sofia-sans-extra-condensed-cyrillic-900-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/figure-still.webp" as="image" type="image/webp" fetchpriority="high">
-<link rel="stylesheet" href="/css/style.css?v=1fabdf62">
+<link rel="stylesheet" href="/css/style.css?v=e1db8584">
 <script data-3d="/js/figure-data.js?v=261bc2f8 /js/wall-data.js?v=6cd84416 /js/figure.js?v=0857396c">
 /* the figure: it starts only where a WebGL2 context really opens and the network is not a slow one; there its files start loading at once
    (as preloads; js/boot3d.js runs them) and a soft still stands in its place until they arrive (css: .wants-3d). On a 3G line the wall is left out,
@@ -366,6 +366,7 @@
       <h2 class="display display--l pl__h" data-i18n="pl_h" data-rv="chars" lang="en">welcome<br>to my playlist</h2>
       <p class="pl__desc" data-i18n="pl_desc" data-rv="lines">Что слушают дизайнеры, арт-директора<br>и люди из креативной индустрии</p>
       <button type="button" class="pl__listen" data-listen data-rv="row" aria-pressed="false"><span data-listen-label>Слушать →</span></button>
+      <a class="pl__tg" data-i18n="pl_tg" href="https://t.me/welcometomyplaylists" target="_blank" rel="noopener" data-rv="row">Telegram-канал →</a>
       <p class="sr" data-track role="status"></p>
     </section>
 
@@ -383,10 +384,11 @@
   </main>
 </div>
 
-<script src="/js/i18n.js?v=729df7b5" defer fetchpriority="high"></script>
-<script src="/js/site.js?v=7d680e3d" defer fetchpriority="high"></script>
-<script src="/js/feed.js?v=20ff4251" defer></script>
-<script src="/js/playlist.js?v=b4a6272a" defer></script>
+<script src="/js/consent.js?v=aafd03fa" defer data-ga=""></script>
+<script src="/js/i18n.js?v=3490464e" defer fetchpriority="high"></script>
+<script src="/js/site.js?v=02a9b09a" defer fetchpriority="high"></script>
+<script src="/js/feed.js?v=de463ae7" defer></script>
+<script src="/js/playlist.js?v=9899432e" defer></script>
 <script src="/js/boot3d.js?v=159045c0" defer data-3d="/js/figure-data.js?v=261bc2f8 /js/wall-data.js?v=6cd84416 /js/figure.js?v=0857396c"></script>
 </body>
 </html>

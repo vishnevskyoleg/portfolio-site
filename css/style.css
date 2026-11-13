@@ -339,6 +339,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .pl__listen [data-listen-label] { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.35s var(--ease-out); }
 .pl__listen[aria-pressed="true"] [data-listen-label] { background-size: 100% 1px; }
 @media (hover: hover) { .pl__listen:hover [data-listen-label] { background-size: 100% 1px; } }
+.pl__tg { display: block; width: max-content; font-size: var(--fs-s); line-height: 1.4; white-space: nowrap; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.35s var(--ease-out), color 0.25s ease; }
+.pl__tg:active { color: var(--teal); }
+@media (hover: hover) { .pl__tg:hover { background-size: 100% 1px; } }
 .pl__canvas { display: block; pointer-events: none; opacity: 0; transition: opacity 0.8s ease; }
 .pl-on .pl__canvas { opacity: 1; }
 
@@ -411,6 +414,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .pl__h { left: calc(var(--u) * 39); top: calc(var(--u) * 5042); }
   .pl__desc { left: calc(var(--u) * 39); top: calc(var(--u) * 5295); }
   .pl__listen { left: calc(var(--u) * 529); top: calc(var(--u) * 5318); }
+  .pl__tg { left: calc(var(--u) * 529); top: calc(var(--u) * 5350); }
 
   .contact__label { left: calc(var(--u) * 41); top: calc(var(--u) * 5778); width: calc(var(--u) * 1164); }
   .contact__line { position: absolute; left: calc(var(--u) * 253); top: calc(var(--u) * 13); width: calc(var(--u) * 911); }
@@ -524,7 +528,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   /* ---- playlist: copy, then the field edge to edge; the contacts start right under its front row ---- */
   .playlist { margin-top: var(--gap); padding-bottom: 56vw; }
   .pl__canvas { position: absolute; left: 50%; bottom: 0; width: 100vw; margin-left: -50vw; height: 72vw; }
-  .pl__h, .pl__desc, .pl__listen { position: relative; z-index: 1; }
+  .pl__h, .pl__desc, .pl__listen, .pl__tg { position: relative; z-index: 1; }
+  .pl__tg { margin-top: 4px; min-height: 44px; display: flex; align-items: center; font-size: var(--fs-20); }
   .pl__desc { margin-top: 24px; font-size: clamp(15px, 4.3vw, 21px); }
   .pl__listen { margin-top: 14px; min-height: 44px; font-size: var(--fs-20); }
 
@@ -590,6 +595,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .pl__h { grid-column: 1 / -1; }
   .pl__desc { grid-column: 1 / 3; font-size: var(--fs-20); }
   .pl__listen { grid-column: 3; margin-top: 0; min-height: 0; justify-self: start; }
+  .pl__tg { grid-column: 3; margin-top: 0; min-height: 0; justify-self: start; }
   .pl__canvas { height: 50vw; }
 
   .contact { grid-template-columns: 58.7fr 41.3fr; column-gap: 0; margin-top: 6vw; }
@@ -668,3 +674,20 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .skip:focus { transform: none; }
 .contact:focus { outline: none; }
 ::selection { background: var(--teal); color: var(--ink); }
+
+/* ---------- v26: a cover grows inside the strip (js/feed.js, mouse) ---------- */
+.feed__item { transform-origin: 50% 0; }
+.feed__item.is-under { opacity: 0; }
+.zoom.is-inline { transition: opacity 0.18s ease, visibility 0s linear 0.18s; box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5); pointer-events: auto; z-index: 4; }
+.zoom.is-inline.is-open { transition: opacity 0.12s ease, visibility 0s; }
+
+/* ---------- consent plate for Google Analytics (js/consent.js) ---------- */
+.consent { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 30; max-width: min(380px, calc(100vw - 32px));
+  padding: 14px 16px 16px; background: var(--ink); color: var(--paper); border: 1px solid var(--hair); font-size: var(--fs-s); line-height: 1.35;
+  opacity: 0; transform: translateY(12px); transition: opacity 0.3s ease, transform 0.4s var(--ease-out); }
+.consent.is-on { opacity: 1; transform: none; }
+.consent__text { margin: 0 0 12px; }
+.consent__row { display: flex; gap: 8px; }
+.consent__btn { min-height: 40px; padding: 0 16px; border: 1px solid var(--paper); border-radius: 999px; background: none; color: inherit; font: inherit; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; }
+.consent__btn--yes { background: var(--teal); border-color: var(--teal); color: var(--ink); }
+@media (hover: hover) { .consent__btn:hover { background: var(--paper); border-color: var(--paper); color: var(--ink); } }

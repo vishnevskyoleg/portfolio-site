@@ -95,12 +95,19 @@
         stepT += dt; if (stepT > STEP_TIME) openOn(it);
       } else stepOn = null;
     }
+    lay(dt);
     raf = requestAnimationFrame(frame);
   }
   function wake() { if (!raf && visible && !calm.matches) { prev = 0; raf = requestAnimationFrame(frame); } }
 
   /* the cover at a point of the window; a point in a gap belongs to the nearer cover */
   function under(x, y) {
+    if (inl.act >= 0 || inl.busy) {                                 // the covers have moved apart: ask the page what is under the pointer
+      var hit = document.elementFromPoint(x, y);
+      if (hit && hit.closest && hit.closest('.zoom.is-inline')) return zoomed;
+      var c = hit && hit.closest && hit.closest('.feed__item');
+      return c && feed.contains(c) ? c : null;
+    }
     var r = feed.getBoundingClientRect();
     if (y < r.top || y > r.bottom || x < r.left || x > r.right) return null;
     if (!lefts.length) measure();
@@ -117,7 +124,7 @@
   window.addEventListener('pointermove', function (e) {
     if (e.pointerType !== 'mouse') return;
     if (e.clientX === px && e.clientY === py) return;
-    var now = performance.now(), on = !!(e.target && e.target.closest && e.target.closest('[data-feed]'));
+    var now = performance.now(), on = !!(e.target && e.target.closest && (e.target.closest('[data-feed]') || e.target.closest('.zoom.is-inline')));
     if (px >= 0 && now - pt < 120) {
       var dt = Math.max(0.004, (now - pt) / 1000), k = 1 - Math.exp(-dt / 0.045);
       vx += ((e.clientX - px) / dt - vx) * k;
@@ -202,6 +209,8 @@
     return 'translate3d(' + (r.left - g[2]).toFixed(1) + 'px,' + (r.top - g[3]).toFixed(1) + 'px,0) scale(' + (r.width / g[0]).toFixed(4) + ',' + (r.height / g[1]).toFixed(4) + ')';
   }
   function openOn(it, tap) {
+    if (!tap && !calm.matches) { openIn(it); return; }
+    if (inl.act >= 0) closeIn(true);
     var r = it.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
     var m = vw < 600 ? 0 : 16, mt = 16, mb = 16 + 30;                // the caption sits under the picture
     var k = Math.min(ZOOM, (vw - m * 2) / r.width, (vh - mt - mb) / r.height, vh * ZOOM_VH / r.height);
@@ -235,10 +244,99 @@
       var p = b.vid.play(); if (p && p.catch) p.catch(function () {});
     }, VIDEO_WAIT);
     capN.textContent = n; capT.textContent = titles[n] || '';
+    if (window.LFtrack) LFtrack('case_open', { case_id: n, case_title: titles[n] || '' });
     cap.style.left = Math.max(16, left).toFixed(1) + 'px'; cap.style.top = (top + h).toFixed(1) + 'px';
     cap.style.maxWidth = (Math.min(vw - 16, left + w) - Math.max(16, left)).toFixed(1) + 'px';
     cap.classList.add('is-open');
   }
+  /* ---------- a cover grows inside the strip: the others move apart, nothing opens over the page ---------- */
+  var inl = { act: -1, ex: [], k: [], t: [], sh: [], box: null, busy: false, g: 0, corr: 0, last: -1 };
+  /* the next block: on the desktop poster the playlist section itself has no height, its parts are placed one by one */
+  var next = Array.prototype.slice.call(document.querySelectorAll('.playlist [data-rv], .playlist h2'));
+  function nextTop() { var t = Infinity; next.forEach(function (n) { var r = n.getBoundingClientRect(); if (r.height) t = Math.min(t, r.top); }); return t; }
+  function room(it) {                                               // how many times the cover may grow: the room under the strip, the width of the window
+    var r = feed.getBoundingClientRect(), h = it.offsetHeight || r.height, w = it.offsetWidth || h;
+    var nt = nextTop(), below = nt < Infinity ? nt - r.top - 40 - 30 : window.innerHeight * 0.74;
+    var low = window.innerHeight - r.top - 16 - 30;                 // and the cover stays inside the window
+    return Math.max(1.6, Math.min(ZOOM, below / h, low / h, (document.documentElement.clientWidth - 32) / w));
+  }
+  function openIn(it) {
+    var i = items.indexOf(it); if (i < 0) return;
+    if (!inl.box) { inl.box = make(); inl.box.el.classList.add('is-inline'); inl.box.el.style.transform = 'none'; }
+    var b = inl.box, n = it.dataset.n;
+    if (inl.act >= 0 && items[inl.act] !== it) { inl.ex[inl.act] = inl.ex[inl.act] || 0; }
+    inl.act = i; inl.k[i] = room(it); zoomed = it; byTap = false; stepOn = null;
+    if (inl.ex[i] == null) inl.ex[i] = 0;
+    clearTimeout(b.tidy); stopVideo(b); b.item = it;
+    b.pic.classList.remove('is-ready'); b.pic.removeAttribute('src');
+    b.el.style.backgroundImage = 'url("' + (it.currentSrc || it.src) + '")';
+    b.el.classList.add('is-open');
+    b.pic.src = BASE + 'full/' + n + '.jpg?v=' + FILES_V;
+    if (it.dataset.video) b.wait = setTimeout(function () {
+      if (b.item !== it || items[inl.act] !== it) return;
+      b.vid.src = BASE + 'video/' + n + '.mp4?v=' + FILES_V;
+      var p = b.vid.play(); if (p && p.catch) p.catch(function () {});
+    }, VIDEO_WAIT);
+    capN.textContent = n; capT.textContent = titles[n] || '';
+    if (window.LFtrack) LFtrack('case_open', { case_id: n, case_title: titles[n] || '' });
+    inl.busy = true; wake();
+  }
+  function closeIn(now) {
+    var b = inl.box; inl.act = -1;
+    if (b) { b.item = null; clearTimeout(b.wait); b.el.classList.remove('is-open'); clearTimeout(b.tidy); b.tidy = setTimeout(function () { stopVideo(b); b.pic.removeAttribute('src'); b.pic.classList.remove('is-ready'); }, 320); }
+    if (now) { inl.ex = []; flat(); }
+    wake();
+  }
+  function flat() { for (var j = 0; j < items.length; j++) { if (inl.t[j]) { items[j].style.transform = ''; inl.t[j] = ''; } items[j].classList.remove('is-under'); } inl.busy = false; inl.g = 0; inl.corr = 0; inl.last = -1; inl.sh = []; }
+  function lay(dt) {
+    if (!inl.busy) return;
+    var q = 1 - Math.exp(-dt * 11), any = false, anchor = -1, best = 0;
+    for (var i in inl.ex) {
+      var tgt = +i === inl.act ? 1 : 0, e = inl.ex[i] + (tgt - inl.ex[i]) * q;
+      if (Math.abs(e - tgt) < 0.002) e = tgt;
+      if (e <= 0) { delete inl.ex[i]; continue; }
+      inl.ex[i] = e; any = true; if (e > best) { best = e; anchor = +i; }
+    }
+    if (inl.act >= 0) anchor = inl.act;
+    if (!any) { flat(); return; }
+    if (!lefts.length) measure();
+    /* every grown cover pushes the ones after it; the anchor keeps its centre, the others move to both sides */
+    var d = {}, pre = 0, preA = 0;
+    for (var j = 0; j < items.length; j++) {
+      if (j === anchor) preA = pre;
+      var ex = inl.ex[j]; if (ex) { d[j] = widths[j] * (inl.k[j] - 1) * ex; pre += d[j]; }
+    }
+    var A = preA + (d[anchor] || 0) / 2;
+    /* the grown cover stays inside the window */
+    var fr = feed.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+    var sA = 1 + (inl.k[anchor] - 1) * (inl.ex[anchor] || 0), wA = widths[anchor] * sA;
+    var cA = fr.left + lefts[anchor] - pos + widths[anchor] / 2;
+    var gT = Math.max(16 - (cA - wA / 2), Math.min(0, vw - 16 - (cA + wA / 2)));
+    inl.g = gT;
+    /* a new anchor would jump to its own centre: the difference is taken up and melts away */
+    var raw = preA + (d[anchor] || 0) / 2 - A + inl.g;
+    if (inl.last >= 0 && inl.last !== anchor && inl.sh[anchor] != null) inl.corr += inl.sh[anchor] - raw;
+    inl.last = anchor; inl.corr *= Math.exp(-dt * 7); if (Math.abs(inl.corr) < 0.3) inl.corr = 0;
+    var run = 0;
+    for (var m = 0; m < items.length; m++) {
+      var dm = d[m] || 0, s = 1 + (dm ? dm / widths[m] : 0), sh = run + dm / 2 - A + inl.g + inl.corr;
+      run += dm; inl.sh[m] = sh;
+      var tr = (Math.abs(sh) < 0.05 && s === 1) ? '' : 'translate3d(' + sh.toFixed(1) + 'px,0,0) scale(' + s.toFixed(4) + ')';
+      if (tr !== (inl.t[m] || '')) { items[m].style.transform = tr; inl.t[m] = tr; }
+      items[m].classList.toggle('is-under', m === anchor && inl.act === anchor);
+    }
+    /* the box with the large picture and the video lies exactly over the grown cover */
+    var b = inl.box;
+    if (b && inl.act === anchor) {
+      var it = items[anchor], hA = it.offsetHeight * sA, left = cA - wA / 2 + inl.g + inl.corr, top = fr.top;
+      b.el.style.left = left.toFixed(1) + 'px'; b.el.style.top = top.toFixed(1) + 'px';
+      b.el.style.width = wA.toFixed(1) + 'px'; b.el.style.height = hA.toFixed(1) + 'px';
+      cap.style.left = Math.max(16, left).toFixed(1) + 'px'; cap.style.top = (top + hA).toFixed(1) + 'px';
+      cap.style.maxWidth = Math.max(80, Math.min(vw - 16, left + wA) - Math.max(16, left)).toFixed(1) + 'px';
+      if (inl.ex[anchor] > 0.6) cap.classList.add('is-open');
+    }
+  }
+
   function shut(b) {
     var it = b.item; if (!it) return;
     b.item = null; clearTimeout(b.wait);
@@ -249,6 +347,7 @@
   }
   function close() {
     if (!zoomed) return;
+    if (inl.act >= 0) { closeIn(); zoomed = null; still = 0; stepOn = null; cap.classList.remove('is-open'); return; }
     zoomed = null; byTap = false; kbd = false; still = 0; stepOn = null; if (hold > 10) hold = 0.6;
     if (cur) shut(cur); cur = null;
     feed.classList.remove('is-zoom'); cap.classList.remove('is-open'); shade.classList.remove('is-open');
@@ -326,7 +425,7 @@
     measure(); wake();
   }
   if (calm.addEventListener) calm.addEventListener('change', mode); else if (calm.addListener) calm.addListener(mode);
-  window.addEventListener('resize', function () { var k = period; measure(); if (k > 0 && period > 0) pos *= period / k; close(); });
+  window.addEventListener('resize', function () { close(); if (inl.busy) { inl.ex = []; flat(); } var k = period; measure(); if (k > 0 && period > 0) pos *= period / k; });
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (!visible) close(); wake(); }, { rootMargin: '200px 0px' }).observe(feed);
   } else visible = true;

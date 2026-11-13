@@ -183,6 +183,7 @@
   function held() { return [reeseG.gain, subG.gain, padG.gain, reeseF.frequency, reeseA.frequency, reeseB.frequency, sub.frequency].concat(pad.map(function (o) { return o.frequency; })); }
   function play() {
     if (!AC) return;
+    if (window.LFtrack) LFtrack('playlist_play');
     try { if (!ctx) setup(); } catch (e) { ctx = null; if (btn) btn.disabled = true; return; }
     ran = false;                                           // true once this run is really sounding
     var p = ctx.resume(); if (p && p.then) p.then(function () { ran = playing; }, function () { if (playing) pause(); });

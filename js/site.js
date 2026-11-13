@@ -237,6 +237,7 @@
 
   var leaving = [], turn = 0;                           // texts on their way out; the number of the current swap
   function setLang(lg, animate) {
+    if (animate && lg !== lang && window.LFtrack) LFtrack('lang_switch', { lang: lg });
     if (lg === want) return;
     want = lg;
     try { history.replaceState(null, '', address(lg)); } catch (e) {}

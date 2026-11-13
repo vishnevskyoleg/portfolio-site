@@ -212,6 +212,11 @@ window.LF_I18N = {
   "en": "Pause",
   "ru": "Пауза"
  },
+ "pl_tg": {
+  "kind": "plain",
+  "en": "Telegram channel →",
+  "ru": "Telegram-канал →"
+ },
  "pl_on": {
   "kind": "plain",
   "en": "Playing: drum and bass, 174 BPM",
