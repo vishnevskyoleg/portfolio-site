@@ -1,0 +1,23 @@
+{
+ "name": "Lovely&Friendly — Oleg Vishnevsky",
+ "short_name": "Lovely&Friendly",
+ "description": "Portfolio of designer Oleg Vishnevsky: product interfaces, websites, design systems and brand identity. 20+ years of practice, AI-driven pipelines since 2022.",
+ "lang": "en",
+ "id": "/",
+ "start_url": "/",
+ "display": "browser",
+ "background_color": "#00031a",
+ "theme_color": "#00031a",
+ "icons": [
+  {
+   "src": "/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}

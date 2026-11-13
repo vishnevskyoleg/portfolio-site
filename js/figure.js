@@ -65,10 +65,7 @@
     'uniform vec2 uRot; uniform vec4 uMap; uniform vec3 uPtr; uniform vec3 uRip; uniform vec3 uSh;',
     'uniform float uSize, uEps, uTime, uIdle, uAssemble, uEnergy, uDir, uDots, uFocusY, uPtrR, uWall, uBurst, uPersp, uEdge, uEdge2, uFlip;',
     'out vec3 vCol; out vec3 vNor; out float vFade; out float vLum; out float vDepth; out float vSize;',
-    // integer hash: fract(sin(n)) loses precision on real GPUs for large point ids and the
-    // "random" values start to repeat along the sorted rows -> horizontal bands
-    'uint hashu(uint x){ x ^= x >> 16; x *= 0x7feb352dU; x ^= x >> 15; x *= 0x846ca68bU; x ^= x >> 16; return x; }',
-    'float hash(float n){ return float(hashu(floatBitsToUint(n)) >> 8) / 16777216.0; }',
+    'float hash(float n){ return fract(sin(n) * 43758.5453); }',
     'void main(){',
     '  vec3 p = aPos / 30000.0; vec3 n = aNor; float id = float(gl_VertexID);',
     '  float h = hash(id * 0.37), h2 = hash(id * 1.13 + 4.0), h3 = hash(id * 2.71 + 9.0);',
@@ -81,11 +78,9 @@
     '  if (uDots > 0.5) {',
     '    float trust = 1.0;',                 // the photo side is reliable, the far side is not
     '    float tone = smoothstep(0.12, 0.82, luma);',
-    '    tone = mix(max(tone, 0.34), tone, uWall);',
     '    float shd = uWall * exp(-pow((p.x - uSh.x) / uSh.z, 2.0) - pow((p.y - uSh.y) / (uSh.z * 0.2), 2.0));', // contact shadow under the shoes
     '    tone *= 1.0 - 0.9 * shd;',
     '    gone = h2 > mix(0.82, 1.0, trust) || hash(id * 5.3 + 2.0) > mix(mix(0.55, 1.0, uWall), 1.0, tone);', // halftone: tone = density
-    '    if (uWall < 0.5 && hash(id * 7.7 + 1.0) > smoothstep(0.0, 0.016, p.y) + 0.12) gone = true;',
     '    float F = abs(nv.z);',
     '    float g = smoothstep(0.07, 0.28, abs(p.y - uFocusY));',      // focus band at the middle of the screen
     '    float amp = mix(0.6, 1.9, g) * (1.0 + 1.2 * (1.0 - trust)) * (1.0 + 3.0 * uEnergy) * uIdle;',
@@ -118,16 +113,13 @@
     '    q += off * (1.0 - e); vFade = smoothstep(0.0, 0.15, t);',
     '    size = uSize * mix(0.62, 1.18, tone) * (0.8 + 0.4 * h) * mix(1.12, 0.9, g) * mix(0.6, 1.0, trust) * (1.0 + 0.2 * f) * (1.0 + 2.0 * (1.0 - e));',
     '    vDepth = mix(smoothstep(-0.12, 0.12, q.z), 1.0, uWall);',
-    '    float mx = max(aCol.r, max(aCol.g, aCol.b)), mn = min(aCol.r, min(aCol.g, aCol.b));',
-    '    float neutral = (1.0 - smoothstep(0.10, 0.26, (mx - mn) / max(mx, 0.01))) * smoothstep(0.42, 0.62, luma);', // white shoes stay white, also in their own shade
-    '    vLum = mix(tone, max(tone, 0.92), neutral * (1.0 - uWall));',
+    '    vLum = tone;',
     '  }',
     '  if (uWall > 0.5) {',                                              // the wall never ends with an edge: it thins out
     '    float sy = p.y * uFlip;',                                        // below the floor line the floor goes on as a mirrored copy
     '    float fz = 1.0 - smoothstep(0.085, 0.125, p.y);',               // 1 on the floor, 0 on the wall
     '    float ff = smoothstep(-0.17, 0.07, sy) * mix(1.0, 1.0 - smoothstep(0.14, 0.5, abs(p.x - uSh.x)), fz);',
     '    if (uFlip < 0.0 && p.y > 0.2) ff = 0.0;',
-    '    ff *= mix(1.0, 0.6, fz);',
     '    ff *= 1.0 - smoothstep(uEdge, uEdge2, abs(q.x * uMap.x + uMap.y));', // the wall has a maximum width; beyond it, it fades
     '    if (hash(id * 3.1 + 7.0) > ff * 1.1) gone = true;',
     '    vFade *= smoothstep(0.0, 0.45, ff); size *= mix(0.7, 1.0, ff);',
@@ -153,8 +145,7 @@
     '    ramp = mix(ramp, vec3(0.749, 0.961, 0.949), smoothstep(0.78, 1.0, vLum));',
     '    vec3 col = mix(ramp, vCol, 0.3);',
     '    col *= 0.62 + 0.42 * max(dot(n, normalize(vec3(-0.4, 0.5, 0.75))), 0.0);',
-    '    col += vec3(0.60, 0.92, 0.92) * pow(clamp(abs(n.x), 0.0, 1.0), 3.0) * 0.28;', // rim light only where the surface turns sideways
-    '    col *= 1.0 - 0.45 * smoothstep(0.45, 0.95, abs(n.y));',                     // ledges facing up/down never light up as a line
+    '    col += vec3(0.60, 0.92, 0.92) * pow(1.0 - F, 3.0) * 0.28;',              // rim light on hood, shoulder, sleeve
     '    col *= mix(0.6, 1.0, vDepth) * uDim;',
     '    col *= 0.78 + 0.3 * sqrt(1.0 - r2);',                                     // a small sphere, not a flat disc
     '    float a = (1.0 - smoothstep(1.0 - 2.4 / max(vSize, 2.4), 1.0, sqrt(r2))) * vFade;',
