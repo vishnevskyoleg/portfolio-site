@@ -86,7 +86,7 @@
        link itself (aria-label), so that the text stays in the page once, not twice, for search engines too. */
     var host = node.closest('h1,h2,h3,a,button');
     node.textContent = '';
-    if (host) host.setAttribute('aria-label', label.join(' '));
+    if (host) host.setAttribute('aria-label', label.join(' ').replace(/\u00a9/g, 'o'));   // "Hell©" is read as "Hello", not as a copyright sign
     else { var sr = make('span', 'sr'); sr.textContent = label.join(' '); node.appendChild(sr); }
     node.appendChild(holder);
     kern(node);
@@ -313,6 +313,15 @@
     }, 1500);
   }
 
+  /* the photos below the first screen are lazy: they are asked for and decoded a screen and a half before they are seen,
+     so that they still open whole and in time */
+  if ('IntersectionObserver' in window) {
+    var warmPh = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (!e.isIntersecting) return; warmPh.unobserve(e.target); var im = e.target.querySelector('img'); if (!im) return; im.loading = 'eager'; if (im.decode) im.decode().catch(noop); });
+    }, { rootMargin: '1400px 0px' });
+    all('.ph').forEach(function (f) { if (f.querySelector('img[loading="lazy"]')) warmPh.observe(f); });
+  }
+
   var groups = [], io = null;
   function seen(g) { g.__seen = true; if (io) io.unobserve(g); show(g); }
   function start() {
@@ -409,7 +418,8 @@
       fo = new IntersectionObserver(function (es) { if (es.some(function (e) { return e.isIntersecting; })) load(); }, { rootMargin: '1400px 0px' });
       fo.observe(feed);
       /* and in any case once the page itself has loaded: a jump straight to the feed finds the covers there */
-      var later = function () { setTimeout(load, 2500); };
+      var net = navigator.connection || {};
+      var later = function () { if (!net.saveData && !/2g|3g/.test(net.effectiveType || '')) setTimeout(load, 4000); };   // not on a slow or metered line
       if (document.readyState === 'complete') later(); else window.addEventListener('load', later);
     } else load();
 

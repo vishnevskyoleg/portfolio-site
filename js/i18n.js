@@ -232,6 +232,11 @@ window.LF_I18N = {
   "en": "Telegram Blog",
   "ru": "Telegram-блог"
  },
+ "hello_label": {
+  "kind": "plain",
+  "en": "Hello, I’m Oleg Vishnevsky",
+  "ru": "Алло, я Олег Вишневский"
+ },
  "meta_title": {
   "kind": "plain",
   "en": "Oleg Vishnevsky — Designer & Digital Lead | Lovely&Friendly",

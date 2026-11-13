@@ -48,7 +48,10 @@
     comp.threshold.value = -16; comp.knee.value = 8; comp.ratio.value = 4; comp.attack.value = 0.004; comp.release.value = 0.16;
     analyser = ctx.createAnalyser(); analyser.fftSize = 4096; analyser.smoothingTimeConstant = 0.55;
     freq = new Uint8Array(analyser.frequencyBinCount);
-    comp.connect(master); master.connect(ctx.destination); comp.connect(analyser);
+    /* a limiter after the compressor: no peak reaches the edge of the scale */
+    var lim = ctx.createDynamicsCompressor();
+    lim.threshold.value = -4; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.001; lim.release.value = 0.08;
+    comp.connect(lim); lim.connect(master); master.connect(ctx.destination); comp.connect(analyser);
 
     drums = ctx.createGain(); drums.gain.value = 0.9; drums.connect(comp);
     duck = ctx.createGain(); duck.connect(comp);            // the music gives way to every kick
@@ -188,7 +191,7 @@
     hits = ctx.createGain(); hits.connect(drums);
     notes = ctx.createGain(); notes.connect(music); notes.connect(send);
     step = 0; nextT = t + 0.08; late = false;
-    master.gain.cancelScheduledValues(t); master.gain.setTargetAtTime(0.8, t, 0.03);
+    master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(0, t); master.gain.setTargetAtTime(0.62, t, 0.45);   // the sound comes in over a second and a half
     playing = true; tick(); metronome(true);
     label(); if (status) status.textContent = LF.t('pl_on');
   }
@@ -208,7 +211,7 @@
     if (!AC) btn.disabled = true;
     btn.addEventListener('click', function () { if (playing) pause(); else play(); });
   }
-  document.addEventListener('visibilitychange', tick);
+  document.addEventListener('visibilitychange', function () { if (document.hidden && playing) pause(); else tick(); });   // a hidden tab does not keep playing on its own
   LF.onLang(function () { label(); if (status && status.textContent) status.textContent = LF.t(playing ? 'pl_on' : 'pl_off'); });
   label();                                                // the page may already be in Russian when this file arrives
 

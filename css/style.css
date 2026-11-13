@@ -652,3 +652,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .feed__track { animation: none; will-change: auto; }
   .zoom, .zoom.is-open, .zoom-cap, .zoom-cap.is-open, .zoom-shade, .zoom-shade.is-open, .zoom__bar, .feed__track { transition: none; }
 }
+
+/* ---------- v23: after the Red Team audit ---------- */
+/* copy on the figure keeps a dark edge at every width (it was on phones only): the particles behind it stay, the letters read */
+.hello, .roles, .lead, .awards__list { text-shadow: 0 0 12px var(--ink), 0 0 3px var(--ink); }
+/* the open switch shows which language is on */
+.lang.is-open .lang__btn[aria-current="true"] { background: var(--teal); border-color: var(--teal); color: var(--ink); }
+/* the strip answers the mouse: the pointer says so */
+@media (hover: hover) and (pointer: fine) { .feed.is-live { cursor: zoom-in; } }
+.feed__item:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+::selection { background: var(--teal); color: var(--ink); }

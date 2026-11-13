@@ -27,15 +27,15 @@
   var ZOOM = 4;            // how many times a cover grows
   var ZOOM_MIN = 3.4;      // it gives up this much to stay clear of the heading of the block (less only where the window is too small)
   var ZOOM_VH = 0.74;      // and never taller than this share of the window
-  var SCRUB = 2.8;         // strip travel per pixel of pointer travel, at a full sweep
-  var AIM_SPEED = 120;     // px/s of the pointer: below it the strip does not answer at all
-  var SWEEP_SPEED = 720;   // px/s of the pointer: from here on the scrub works in full
+  var SCRUB = 2.4;         // strip travel per pixel of pointer travel, at a full sweep
+  var AIM_SPEED = 90;      // px/s of the pointer: below it the strip does not answer at all
+  var SWEEP_SPEED = 600;   // px/s of the pointer: from here on the scrub works in full (the way up is a straight line, no sudden take-off)
   var LOOP_S = 221;        // seconds per loop when nobody touches the strip
   var REST_SPEED = 60;     // px/s: below it the pointer counts as resting on a cover
   var REST_TIME = 0.08;    // s of rest before the cover opens
   var STRIP_REST = 180;    // px/s: the strip must have slowed down to this before a cover opens
-  var FLEE_SPEED = 480;    // px/s of the pointer: above it an open cover closes and the scrub takes over
-  var STEP_SPEED = 480;    // px/s of the pointer: below it an open view moves over to the cover under the pointer
+  var FLEE_SPEED = 380;    // px/s of the pointer: above it an open cover closes and the scrub takes over
+  var STEP_SPEED = 380;    // px/s of the pointer: below it an open view moves over to the cover under the pointer
   var STEP_TIME = 0.06;    // s on that cover before it does
   var VIDEO_WAIT = 160;    // ms an opened cover waits before its video is asked for
 
@@ -48,6 +48,8 @@
   var inside = false, px = -1, py = -1, pt = 0, vx = 0, sp = 0, still = 0, visible = false, raf = 0, prev = 0;
   var stepOn = null, stepT = 0, calmTimer = 0, tapT = 0;
   var drag = null;
+  var shutAt = null;       // [x, y] of the pointer when Esc closed a cover: nothing opens again until the pointer really moves away
+  var kbd = false;         // a cover was opened from the keyboard
 
   function measure() {
     if (items[half]) period = items[half].offsetLeft - items[0].offsetLeft;
@@ -59,7 +61,7 @@
     if (period > 0) { pos %= period; if (pos < 0) pos += period; }
     track.style.transform = 'translate3d(' + (-pos).toFixed(2) + 'px,0,0)';
   }
-  function ramp(a) { var k = Math.max(0, Math.min(1, (a - AIM_SPEED) / (SWEEP_SPEED - AIM_SPEED))); return k * k * (3 - 2 * k); }
+  function ramp(a) { return Math.max(0, Math.min(1, (a - AIM_SPEED) / (SWEEP_SPEED - AIM_SPEED))); }
 
   function frame(t) {
     raf = 0; if (!visible || calm.matches) return;
@@ -82,7 +84,8 @@
       place();
     }
     /* a cover opens under a pointer that has come to rest; an open one follows a slow pointer */
-    if (inside && !drag && !byTap) {
+    if (shutAt && (Math.abs(px - shutAt[0]) > 12 || Math.abs(py - shutAt[1]) > 12)) shutAt = null;
+    if (inside && !drag && !byTap && !shutAt) {
       if (sp < REST_SPEED && Math.abs(push) < STRIP_REST) still += dt; else still = 0;
       var it = under(px, py);
       if (!zoomed) { if (still > REST_TIME && it) { push = 0; openOn(it); } }
@@ -202,7 +205,7 @@
     var m = vw < 600 ? 0 : 16, mt = 16, mb = 16 + 30;                // the caption sits under the picture
     var k = Math.min(ZOOM, (vw - m * 2) / r.width, (vh - mt - mb) / r.height, vh * ZOOM_VH / r.height);
     /* the picture grows down from the strip and keeps the heading of the block clear while the window lets it */
-    var hb = head ? Math.min(r.top, head.getBoundingClientRect().bottom) : -1e6;
+    var hb = head ? Math.min(r.top, head.getBoundingClientRect().bottom + 24) : -1e6;   // and keeps 24 px of air under it
     k = Math.max(1, Math.min(k, Math.max(ZOOM_MIN, (vh - mb - hb) / r.height)));
     var w = r.width * k, h = r.height * k;
     var left = Math.max(m, Math.min(vw - m - w, r.left + r.width / 2 - w / 2));
@@ -245,7 +248,7 @@
   }
   function close() {
     if (!zoomed) return;
-    zoomed = null; byTap = false; still = 0; stepOn = null; if (hold > 10) hold = 0.6;
+    zoomed = null; byTap = false; kbd = false; still = 0; stepOn = null; if (hold > 10) hold = 0.6;
     if (cur) shut(cur); cur = null;
     feed.classList.remove('is-zoom'); cap.classList.remove('is-open'); shade.classList.remove('is-open');
   }
@@ -255,7 +258,42 @@
   feed.addEventListener('scroll', function () { clearTimeout(calmTimer); if (zoomed) close(); }, { passive: true });
   window.addEventListener('blur', function () { inside = false; close(); });
   document.addEventListener('pointerdown', function (e) { if (zoomed && byTap && !e.target.closest('[data-feed], .zoom, .zoom-shade')) close(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && zoomed) { var k = kbd; shutAt = [px, py]; close(); if (k) hold = 1e6; } });
+
+  /* ---------- keyboard: the 62 covers of the first round are buttons; arrows walk along, Enter and Space open and close ---------- */
+  var first = items.slice(0, half);
+  first.forEach(function (it, i) {
+    it.tabIndex = i === 0 ? 0 : -1;                                // one stop in the Tab order, the arrows do the rest
+    it.setAttribute('role', 'button');
+  });
+  items.slice(half).forEach(function (it) { it.setAttribute('aria-hidden', 'true'); it.removeAttribute('tabindex'); });
+  function bring(it) {                                              // the focused cover is pulled into the middle of the strip
+    if (!lefts.length || !period) measure();
+    var i = items.indexOf(it), fw = feed.clientWidth;
+    if (calm.matches) { it.scrollIntoView({ block: 'nearest', inline: 'center' }); return; }
+    var x = lefts[i] - pos;
+    if (x < 16 || x + widths[i] > fw - 16) { pos = lefts[i] - (fw - widths[i]) / 2; place(); }
+  }
+  feed.addEventListener('focusin', function (e) {
+    var it = e.target.closest && e.target.closest('.feed__item'); if (!it || first.indexOf(it) < 0) return;
+    first.forEach(function (x) { x.tabIndex = x === it ? 0 : -1; });
+    hold = 1e6; push = 0; base = 0; bring(it);
+    if (zoomed && kbd) { openOn(it, true); kbd = true; }
+  });
+  feed.addEventListener('focusout', function (e) {
+    if (e.relatedTarget && feed.contains(e.relatedTarget)) return;
+    if (kbd) close(); kbd = false; hold = 0.6; wake();
+  });
+  feed.addEventListener('keydown', function (e) {
+    var it = e.target.closest && e.target.closest('.feed__item'); if (!it) return;
+    var i = first.indexOf(it); if (i < 0) return;
+    var to = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? first.length - 1 : null;
+    if (to !== null) { e.preventDefault(); first[(to + first.length) % first.length].focus({ preventScroll: true }); return; }
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (zoomed === it) close(); else { bring(it); openOn(it, true); kbd = true; }
+    }
+  });
 
   /* ---------- start ---------- */
   function mode() {
