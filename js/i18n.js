@@ -249,23 +249,23 @@ window.LF_I18N = {
  },
  "meta_title": {
   "kind": "plain",
-  "en": "Oleg Vishnevsky — Designer & Digital Lead | Lovely&Friendly",
-  "ru": "Олег Вишневский — дизайнер, Digital Lead | Lovely&Friendly"
+  "en": "Oleg Vishnevsky — AI-driven Engineer, Digital Lead, Expert in Visual & UX, Design Director",
+  "ru": "Олег Вишневский — AI-инженер, Digital Lead, дизайн-директор"
  },
  "meta_desc": {
   "kind": "plain",
-  "en": "Portfolio of designer Oleg Vishnevsky: product interfaces, websites, design systems and brand identity. 20+ years of practice, AI-driven pipelines since 2022.",
-  "ru": "Портфолио дизайнера Олега Вишневского: интерфейсы, сайты, дизайн-системы, айдентика. Больше 20 лет в дизайне, с 2022 года строит AI-пайплайны."
+  "en": "Oleg Vishnevsky is an AI-driven Engineer and Digital Lead with 20+ years in digital. He develops AI pipelines and solutions, interfaces, websites and design systems, and works across video, visual design and UX. He is also a Design Director.",
+  "ru": "Олег Вишневский — AI-инженер и Digital Lead с опытом более 20 лет. Разрабатывает AI-пайплайны и решения, интерфейсы, сайты и дизайн-системы; работает с видео и UX."
  },
  "og_alt": {
   "kind": "plain",
-  "en": "Lovely&Friendly — Oleg Vishnevsky, designer: a hooded figure made of teal particles on a dark background",
-  "ru": "Lovely&Friendly — дизайнер Олег Вишневский: фигура в капюшоне из бирюзовых частиц на темном фоне"
+  "en": "Oleg Vishnevsky — AI-driven Engineer & Digital Lead. Portfolio preview.",
+  "ru": "Олег Вишневский — AI-инженер и Digital Lead. Превью портфолио."
  },
  "og_role": {
   "kind": "plain",
-  "en": "Designer &amp; Digital Lead",
-  "ru": "дизайнер, Digital Lead"
+  "en": "AI-driven Engineer &amp; Digital Lead",
+  "ru": "AI-driven Engineer, Digital Lead"
  },
  "alt_flash": {
   "kind": "plain",
