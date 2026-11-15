@@ -1,6 +1,6 @@
 /* ==========================================================================
    Lovely&Friendly — Oleg Vishnevsky
-   Source: Figma um3kUuxAgxj4r5mFgmP43F, frames 2775:16 (EN) and 2788:16 (RU), 1440 × 6550
+   Source: Figma um3kUuxAgxj4r5mFgmP43F, frames 2775:16 (EN) and 2788:16 (RU), 1440 × 6424
    Desktop (≥ 1080px): poster layout, every coordinate is the Figma value × --u
    Mobile / tablet (< 1080px): flow layout over the same particle figure
    The particle figure and wall are drawn by js/figure.js into .figure-slot and .plate
@@ -365,7 +365,7 @@ html:not(.wants-3d):not(.is-3d) .figure-slot::before { background-image: url("..
    Desktop poster: Figma coordinates
    ========================================================================== */
 @media (min-width: 1080px) {
-  .poster { height: calc(var(--u) * 6550); }
+  .poster { height: calc(var(--u) * 6424); }
   .poster > section > *,
   .poster > footer > * { position: absolute; }
 
@@ -414,7 +414,7 @@ html:not(.wants-3d):not(.is-3d) .figure-slot::before { background-image: url("..
   .contact__line { position: absolute; left: calc(var(--u) * 253); top: calc(var(--u) * 13); width: calc(var(--u) * 911); }
   .contact__big { left: calc(var(--u) * 41); top: calc(var(--u) * 5964); }
   .contact__small { left: calc(var(--u) * 845); top: calc(var(--u) * 5964); }
-  .contact__mail { left: calc(var(--u) * 845); top: calc(var(--u) * 6470); }
+  .contact__mail { left: calc(var(--u) * 845); top: calc(var(--u) * 6192); }
 }
 
 /* ==========================================================================
@@ -593,7 +593,7 @@ html:not(.wants-3d):not(.is-3d) .figure-slot::before { background-image: url("..
   .contact { grid-template-columns: 58.7fr 41.3fr; column-gap: 0; margin-top: 6vw; }
   .contact__big { grid-column: 1; grid-row: 2 / 4; margin-top: 9vw; }
   .contact__small { grid-column: 2; grid-row: 2; margin-top: 9vw; display: block; line-height: 1.75; }
-  .contact__mail { grid-column: 2; grid-row: 3; align-self: end; margin-top: 0; margin-bottom: 0.9em; line-height: 1.4; }
+  .contact__mail { grid-column: 2; grid-row: 3; align-self: start; margin-top: 2vw; margin-bottom: 0; line-height: 1.4; }
 }
 
 /* narrow tablets: the long rows of the AI list need the whole width, the paragraph steps to the right axis below it */
