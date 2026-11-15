@@ -23,3 +23,6 @@
 
 https://portfolio-site-9oq.pages.dev/*
   X-Robots-Tag: noindex
+
+https://:version.portfolio-site-9oq.pages.dev/*
+  X-Robots-Tag: noindex
