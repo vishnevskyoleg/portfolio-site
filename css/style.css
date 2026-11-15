@@ -531,7 +531,7 @@ html:not(.wants-3d):not(.is-3d) .figure-slot::before { background-image: url("..
   .contact__text { flex: none; }
   .contact__line { flex: 1; }
   .contact__big { margin-top: 12vw; }
-  .contact__small { margin-top: 13vw; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, auto); grid-auto-flow: column; column-gap: var(--cg); line-height: 2.1; }
+  .contact__small { margin-top: 13vw; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: var(--cg); line-height: 2.1; }
   .contact__mail { margin-top: 8vw; line-height: 2.1; }
 }
 
