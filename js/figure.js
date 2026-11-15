@@ -461,14 +461,12 @@
   function inSlot(x, y) { var r = slot.getBoundingClientRect(); return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom; }
   document.addEventListener('dragstart', function (e) { if (e.target.tagName === 'IMG') e.preventDefault(); });
   document.addEventListener('pointerdown', function (e) {
-    if (e.button || !inSlot(e.clientX, e.clientY) || e.target.closest('a, button, input, [data-figure-ui]')) return;
+    if (e.button || !inSlot(e.clientX, e.clientY) || e.target.closest('a, button, input, .ph, .feed, .zoom, [data-figure-ui]')) return;
     ptr = { id: e.pointerId, x: e.clientX, y: e.clientY, lx: e.clientX, lt: e.timeStamp, live: false };
   });
   window.addEventListener('pointermove', function (e) {
     if (!ptr || e.pointerId !== ptr.id) {
       if (e.pointerType === 'mouse') {
-        var near = inSlot(e.clientX, e.clientY);
-        root.style.cursor = near && !e.target.closest('a, button') ? 'grab' : '';
         state.ptrX = e.clientX; state.ptrY = e.clientY; state.ptrOn = 1;
         if (!reduced) state.followTo = (e.clientX / window.innerWidth - 0.5) * 0.2;
         var sp = Math.hypot(e.movementX || 0, e.movementY || 0); state.ptrOn = Math.min(1, 0.25 + sp / 40);

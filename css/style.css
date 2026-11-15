@@ -154,10 +154,9 @@ html:not(.wants-3d):not(.is-3d) .figure-slot::before { background-image: url("..
   left: calc(var(--u) * 632);
   transform: translateX(-50%);
   touch-action: pan-y;
-  cursor: grab;
 }
 .is-dragging,
-.is-dragging * { cursor: grabbing !important; user-select: none; -webkit-user-select: none; }
+.is-dragging * { user-select: none; -webkit-user-select: none; }
 
 .figure-shadow {
   position: absolute;
@@ -655,8 +654,6 @@ html:not(.wants-3d):not(.is-3d) .figure-slot::before { background-image: url("..
 /* ---------- v23: after the Red Team audit ---------- */
 /* the open switch shows which language is on */
 .lang.is-open .lang__btn[aria-current="true"] { background: var(--teal); border-color: var(--teal); color: var(--ink); }
-/* the strip answers the mouse: the pointer says so */
-@media (hover: hover) and (pointer: fine) { .feed.is-live { cursor: zoom-in; } }
 .feed__item:focus-visible, .feed__item.is-kfocus { outline: 2px solid var(--teal); outline-offset: 3px; }
 /* the caption of a cover opened by a tap lies over the page: it gets a plate of its own */
 .zoom-cap.is-open { background: var(--ink); padding: 4px 8px 6px; margin-left: -8px; }
