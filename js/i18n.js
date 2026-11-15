@@ -28,7 +28,7 @@ window.LF_I18N = {
  "lead": {
   "kind": "lines",
   "en": "With over twenty years in the game, I’ve been creating digital products, brands, and joyful user experiences that people actually love to interact with.",
-  "ru": "Больше двадцати лет в дизайне.<br>Делаю digital-продукты, бренды и интерфейсы, к которым хочется возвращаться."
+  "ru": "Больше двадцати лет в деле я создаю<br>digital-продукты, бренды и радостный user experience, с которым людям действительно нравится взаимодействовать."
  },
  "awards_h": {
   "kind": "chars",
