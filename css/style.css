@@ -406,15 +406,15 @@ html:not(.wants-3d):not(.is-3d) .figure-slot::before { background-image: url("..
 
   .pl__canvas { left: 50%; top: calc(var(--u) * 5290); width: 100vw; margin-left: -50vw; height: calc(var(--u) * 470); }
   .pl__h { left: calc(var(--u) * 39); top: calc(var(--u) * 5042); }
-  .pl__desc { left: calc(var(--u) * 39); top: calc(var(--u) * 5295); }
-  .pl__listen { left: calc(var(--u) * 529); top: calc(var(--u) * 5318); }
-  .pl__tg { left: calc(var(--u) * 529); top: calc(var(--u) * 5350); }
+  .pl__desc { left: calc(var(--u) * 39); top: calc(var(--u) * 5278); }
+  .pl__listen { left: calc(var(--u) * 710); top: calc(var(--u) * 5168); }
+  .pl__tg { left: calc(var(--u) * 710); top: calc(var(--u) * 5200); }
 
-  .contact__label { left: calc(var(--u) * 41); top: calc(var(--u) * 5778); width: calc(var(--u) * 1164); }
-  .contact__line { position: absolute; left: calc(var(--u) * 253); top: calc(var(--u) * 13); width: calc(var(--u) * 911); }
+  .contact__label { left: calc(var(--u) * 41); top: calc(var(--u) * 5777); width: calc(var(--u) * 1359); }
+  .contact__line { position: absolute; left: calc(var(--u) * 253); top: calc(var(--u) * 15); width: calc(var(--u) * 1106); }
   .contact__big { left: calc(var(--u) * 41); top: calc(var(--u) * 5964); }
   .contact__small { left: calc(var(--u) * 845); top: calc(var(--u) * 5964); }
-  .contact__mail { left: calc(var(--u) * 845); top: calc(var(--u) * 6344); }
+  .contact__mail { left: calc(var(--u) * 845); top: calc(var(--u) * 6334); }
 }
 
 /* ==========================================================================
