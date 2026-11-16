@@ -61,8 +61,8 @@
 
   /* ---------- shaders ---------- */
   var VS = '#version 300 es\n' + [
-    'in vec3 aPos; in vec3 aCol; in vec3 aNor;',
-    'uniform vec2 uRot; uniform vec4 uMap; uniform vec3 uPtr; uniform vec3 uRip; uniform vec3 uSh;',
+    'in vec3 aPos; in vec3 aCol; in vec3 aNor; in vec4 aV0; in vec4 aV1; in vec4 aV2;',
+    'uniform vec2 uRot; uniform vec4 uMap; uniform vec3 uPtr; uniform vec3 uRip; uniform vec3 uSh; uniform vec4 uVW0, uVW1, uVW2;',
     'uniform float uSize, uEps, uTime, uIdle, uAssemble, uEnergy, uDir, uDots, uFocusY, uPtrR, uWall, uBurst, uPersp, uEdge, uEdge2, uFlip;',
     'out vec3 vCol; out vec3 vNor; out float vFade; out float vLum; out float vDepth; out float vSize;',
     'float hash(float n){ return fract(sin(n) * 43758.5453); }',
@@ -72,15 +72,18 @@
     '  vec3 rnd = vec3(h, h2, h3) - 0.5;',
     '  vec3 q = vec3(p.x * uRot.x + p.z * uRot.y, p.y, -p.x * uRot.y + p.z * uRot.x);',
     '  vec3 nv = vec3(n.x * uRot.x + n.z * uRot.y, n.y, -n.x * uRot.y + n.z * uRot.x);',
-    '  float luma = dot(aCol, vec3(0.299, 0.587, 0.114));',
+    '  float luma = dot(aCol, vec3(0.299, 0.587, 0.114)); vec3 colv = aCol;',
+    // the head keeps one brightness for every 30 degrees of turn: at each angle the face comes from the picture of that angle
+    // image-based figure: every point belongs to one ChatGPT picture and is shown only near that picture's angle (cross-fade between neighbours)
+    '  float vfade = 1.0; if (aV0.x + aV0.y + aV0.z + aV0.w + aV1.x + aV1.y + aV1.z + aV1.w + aV2.x + aV2.y + aV2.z + aV2.w > 0.0) { float lv = dot(aV0, uVW0) + dot(aV1, uVW1) + dot(aV2, uVW2); vfade = clamp(lv / max(luma, 0.004), 0.0, 1.0); }',
     '  vFade = 1.0; vLum = luma; vDepth = 1.0;',
-    '  float size = uSize * (0.85 + 0.3 * h); bool gone = false;',
+    '  float size = uSize * (0.85 + 0.3 * h); bool gone = vfade < 0.04;',
     '  if (uDots > 0.5) {',
     '    float trust = 1.0;',                 // the photo side is reliable, the far side is not
     '    float tone = smoothstep(0.12, 0.82, luma);',
     '    float shd = uWall * exp(-pow((p.x - uSh.x) / uSh.z, 2.0) - pow((p.y - uSh.y) / (uSh.z * 0.2), 2.0));', // contact shadow under the shoes
     '    tone *= 1.0 - 0.9 * shd;',
-    '    gone = h2 > mix(0.82, 1.0, trust) || hash(id * 5.3 + 2.0) > mix(mix(0.55, 1.0, uWall), 1.0, tone);', // halftone: tone = density
+    '    gone = gone || h2 > mix(0.82, 1.0, trust) || hash(id * 5.3 + 2.0) > mix(mix(0.55, 1.0, uWall), 1.0, tone);', // halftone: tone = density
     '    float F = abs(nv.z);',
     '    float g = smoothstep(0.07, 0.28, abs(p.y - uFocusY));',      // focus band at the middle of the screen
     '    float amp = mix(0.6, 1.9, g) * (1.0 + 1.2 * (1.0 - trust)) * (1.0 + 3.0 * uEnergy) * uIdle;',
@@ -126,8 +129,8 @@
     '  }',
     '  float pk = 1.0 / (1.0 - q.z * uPersp); q.x *= pk; q.y = 0.55 + (q.y - 0.55) * pk;', // weak perspective, zero in the photo view
     '  gl_Position = gone ? vec4(2.0, 2.0, 2.0, 1.0) : vec4(q.x * uMap.x + uMap.y, q.y * uMap.z + uMap.w, clamp(-q.z * 3.0 + uEps, -0.98, 0.98), 1.0);',
-    '  gl_PointSize = size; vSize = size;',
-    '  vCol = aCol; vNor = nv;',
+    '  vFade *= vfade; gl_PointSize = size; vSize = size;',
+    '  vCol = colv; vNor = nv;',
     '}'].join('\n');
   var FS = '#version 300 es\nprecision highp float;\n' + [
     'in vec3 vCol; in vec3 vNor; in float vFade; in float vLum; in float vDepth; in float vSize;',
@@ -187,7 +190,9 @@
     var counts = new Uint32Array(buf, 8, nb), off = 8 + 4 * nb;
     var dPos = new Int16Array(buf, off, n * 3); off += n * 6;
     var dCol = new Uint8Array(buf, off, n * 3); off += n * 3;
-    var dNor = new Int8Array(buf, off, n * 3);
+    var dNor = new Int8Array(buf, off, n * 3); off += n * 3;
+    var dV = buf.byteLength >= off + n * 12 ? new Uint8Array(buf, off, n * 12) : null, vd = dV ? new Uint8Array(n * 12) : null;
+    if (dV) for (var cv = 0; cv < 12; cv++) { var av = 0, bv = cv * n; for (var iv = 0; iv < n; iv++) { av = (av + dV[bv + iv]) & 255; vd[iv * 12 + cv] = av; } }
     var pos = new Int16Array(n * 3), col = new Uint8Array(n * 3), nor = new Int8Array(n * 3);
     for (var c = 0; c < 3; c++) {
       var a = 0, b = 0, d = 0, base = c * n;
@@ -199,26 +204,27 @@
     }
     var prefix = [0];
     for (var k = 0; k < nb; k++) prefix.push(prefix[k] + counts[k]);
-    return { n: n, nb: nb, prefix: prefix, pos: pos, col: col, nor: nor };
+    return { n: n, nb: nb, prefix: prefix, pos: pos, col: col, nor: nor, vd: vd };
   }
-  // Twice the points without twice the download: every surface point gets a twin,
+  // More points without more download: every surface point gets twins (three for a light file, two otherwise),
   // shifted inside its voxel along the surface. Same shape, finer grain.
   function densify(d, voxel) {
-    var n = d.n, pos = new Int16Array(n * 6), col = new Uint8Array(n * 6), nor = new Int8Array(n * 6), seed = 1234567;
+    var n = d.n, T = n < 600000 ? 3 : 2, pos = new Int16Array(n * 3 * T), col = new Uint8Array(n * 3 * T), nor = new Int8Array(n * 3 * T), vd = d.vd ? new Uint8Array(n * 12 * T) : null, seed = 1234567;
     function rnd() { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296 - 0.5; }
     for (var i = 0; i < n; i++) {
-      var a = i * 3, b = i * 6;
+      var a = i * 3, b = i * 3 * T;
       var nx = d.nor[a] / 127, ny = d.nor[a + 1] / 127, nz = d.nor[a + 2] / 127;
       var tx = -nz, tz = nx, tl = Math.hypot(tx, tz) || 1; tx /= tl; tz /= tl;      // tangent 1 = n x up
       var ux = ny * tz, uy = nz * tx - nx * tz, uz = -ny * tx;                       // tangent 2 = n x t1
-      for (var k = 0; k < 2; k++) {
+      for (var k = 0; k < T; k++) {
         var j1 = rnd() * voxel, j2 = rnd() * voxel, o = b + k * 3;
         pos[o] = d.pos[a] + tx * j1 + ux * j2; pos[o + 1] = d.pos[a + 1] + uy * j2; pos[o + 2] = d.pos[a + 2] + tz * j1 + uz * j2;
         col[o] = d.col[a]; col[o + 1] = d.col[a + 1]; col[o + 2] = d.col[a + 2];
         nor[o] = d.nor[a]; nor[o + 1] = d.nor[a + 1]; nor[o + 2] = d.nor[a + 2];
+        if (vd) vd.set(d.vd.subarray(i * 12, i * 12 + 12), (i * T + k) * 12);
       }
     }
-    return { n: n * 2, nb: d.nb, prefix: d.prefix.map(function (v) { return v * 2; }), pos: pos, col: col, nor: nor };
+    return { n: n * T, nb: d.nb, prefix: d.prefix.map(function (v) { return v * T; }), pos: pos, col: col, nor: nor, vd: vd };
   }
 
   var model, wall = null, pts, quad, vao, qvao, fbo = null, floatOK = false;
@@ -231,11 +237,14 @@
       var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, a[0], gl.STATIC_DRAW);
       gl.enableVertexAttribArray(a[1]); gl.vertexAttribPointer(a[1], 3, a[2], a[3], 0, 0);
     });
+    if (data.vd) { var vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb); gl.bufferData(gl.ARRAY_BUFFER, data.vd, gl.STATIC_DRAW);
+      for (var q = 0; q < 3; q++) { gl.enableVertexAttribArray(3 + q); gl.vertexAttribPointer(3 + q, 4, gl.UNSIGNED_BYTE, true, 12, q * 4); } }
     gl.bindVertexArray(null);
     return { vao: v, n: data.n, nb: data.nb, prefix: data.prefix };
   }
   function setup(data) {
-    pts = program(VS, FS, ['aPos', 'aCol', 'aNor']);
+    pts = program(VS, FS, ['aPos', 'aCol', 'aNor', 'aV0', 'aV1', 'aV2']);
+    for (var g = 3; g < 6; g++) gl.vertexAttrib4f(g, 0, 0, 0, 0);        // clouds without per-angle data (the wall)
     quad = program(QVS, QFS, ['aP']);
     model = cloud(data); vao = model.vao;
     qvao = gl.createVertexArray(); gl.bindVertexArray(qvao);
@@ -310,6 +319,8 @@
     gl.uniform1f(pts.u.uDir, state.dir);
     gl.uniform1f(pts.u.uFocusY, (r.bottom - H * 0.5) / h);
     gl.uniform1f(pts.u.uPtrR, 95 / h);
+    var vt = ((theta * 6 / Math.PI) % 12 + 12) % 12, vj = Math.floor(vt), vw = vt - vj; vw = vw * vw * vw * (vw * (vw * 6 - 15) + 10); var vW = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; vW[vj] = 1 - vw; vW[(vj + 1) % 12] = vw;
+    gl.uniform4f(pts.u.uVW0, vW[0], vW[1], vW[2], vW[3]); gl.uniform4f(pts.u.uVW1, vW[4], vW[5], vW[6], vW[7]); gl.uniform4f(pts.u.uVW2, vW[8], vW[9], vW[10], vW[11]);
     gl.bindVertexArray(vao);
 
     if (dots && wall && plate) {
